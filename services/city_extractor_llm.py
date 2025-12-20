@@ -1,20 +1,45 @@
-import request
+import requests
 import json
+import os
+from dotenv import load_dotenv
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL = "mistral"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dotenv_path = os.path.join(BASE_DIR, ".env")
 
-def extract_city(text: str)->str|None:
+load_dotenv(dotenv_path)
+
+API_KEY = os.getenv("OPENROUTER_API_KEY")
+API_URL = "https://openrouter.ai/api/v1/chat/completions"
+print(API_KEY)
+
+def extract_city(text: str) -> str | None:
     prompt = f"""
-Ты - сервис извлечения данных.
-Твоя задача - извлечь город из пользовательского запроса о погоде.
-Ответь СТРОГО в JSON, без текста и пояснений.
+Ты — сервис извлечения данных.
+Извлеки город из запроса пользователя о погоде.
+Ответь строго в JSON формате:
+{{"city": string | null}}
 
-Формат:
-{{
-    "city": string| null
-}}
-
-Текст:
-"{text}"
+Текст: "{text}"
 """
+
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "arcee-ai/trinity-mini:free",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0
+    }
+
+    try:
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=10)
+        response.raise_for_status()
+        result = response.json()
+        text_response = result["choices"][0]["message"]["content"]
+        city = json.loads(text_response).get("city")
+        return city
+    except Exception as e:
+        print(f"[LLM API error] {e}")
+        return None
