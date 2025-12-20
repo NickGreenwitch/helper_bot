@@ -1,4 +1,4 @@
-from city_extractor_llm import extract_city
+from services.city_extractor_llm import extract_city
 
 tests = [
     "Какая погода в Москве?",
