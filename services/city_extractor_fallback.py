@@ -1,6 +1,5 @@
 from services.city_extractor_llm import extract_city as llm_extract
 from services.city_extractor_regex import extract_city as regex_extract
-from services.city_normalizer import normalize_city
 
 def extract_city(text: str) -> str | None:
     """
@@ -12,7 +11,6 @@ def extract_city(text: str) -> str | None:
     try:
         city = llm_extract(text)
         if city:
-            city = normalize_city(city)
             print(f"[CITY] LLM → {city}")
             return city
     except Exception as e:

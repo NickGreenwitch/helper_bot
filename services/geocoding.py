@@ -1,4 +1,4 @@
-import request
+import requests
 
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 def get_coordinates(city:str)->dict|None:
@@ -9,7 +9,7 @@ def get_coordinates(city:str)->dict|None:
         "format":"json"
     }
 
-    response = request.get(GEOCODING_URL, params=params, timeout=10)
+    response = requests.get(GEOCODING_URL, params=params, timeout=10)
     response.raise_for_status()
     data=response.json()
 

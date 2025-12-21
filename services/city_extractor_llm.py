@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+from services.city_normalizer import normalize_city
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,7 +40,7 @@ def extract_city(text: str) -> str | None:
         result = response.json()
         text_response = result["choices"][0]["message"]["content"]
         city = json.loads(text_response).get("city")
-        return city
+        return normalize_city(city)
     except Exception as e:
         print(f"[LLM API error] {e}")
         return None

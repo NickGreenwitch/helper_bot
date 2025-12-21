@@ -1,8 +1,9 @@
 from aiogram import Router
 from aiogram.types import Message
 from pathlib import Path
-from services.intent_detector import detect_intent
+from services.intent_detector_llm import detect_intent
 from services.speech_to_text import transcribe
+from services.weather_service import get_weather
 
 voice_router = Router()
 
@@ -32,3 +33,16 @@ async def voice_handler(message: Message):
         f"📌 Тема: {intent_data['intent']}\n"
         f"🔎 Уверенность: {intent_data['confidence']}"
     )
+
+     # ---------- 5. Если тема погода, получаем погоду ----------
+    if intent_data['intent'] == "weather":
+        weather = get_weather(ogg_path)
+        if weather:
+            await message.answer(
+                f"Погода в городе {weather['city']}, {weather.get('country', '')}:\n"
+                f"🌡 Температура: {weather['temperature']}°C\n"
+                f"💨 Ветер: {weather['windspeed']} м/с\n"
+                f"⏱️ Время: {weather['time']}"
+            )
+        else:
+            await message.answer("Не удалось определить погоду для указанного города.")
