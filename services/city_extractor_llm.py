@@ -40,6 +40,7 @@ def extract_city(text: str) -> str | None:
         result = response.json()
         text_response = result["choices"][0]["message"]["content"]
         city = json.loads(text_response).get("city")
+        print(f"[LLM raw] '{city}'") # <- покажет что вернула модель
         return normalize_city(city)
     except Exception as e:
         print(f"[LLM API error] {e}")
